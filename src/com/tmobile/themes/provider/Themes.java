@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.res.CustomTheme;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.UserHandle;
 import android.text.TextUtils;
 
 /**
@@ -166,11 +167,25 @@ public class Themes {
      * customize the intent that is delivered. This is used to access more
      * advanced functionality like conditionalizing certain parts of the theme
      * that is going to be applied.
+     * Eos Note: We keep the method but pass args to another instance 
+     * of the method for Android 4.2 compatibility
      * @param context the context of the caller.
      * @param intent the Intent with extras the specify the conditions to apply.
      */
     public static void changeTheme(Context context, Intent intent) {
-        context.sendOrderedBroadcast(intent, Manifest.permission.CHANGE_CONFIGURATION);
+        changeTheme(context, intent, UserHandle.ALL);
+    }
+
+    /**
+     * As of 4.2, these system broadcasts require a valid UserHandle. This may
+     * become more dynamic later as we consider the multiuser environment
+     * @param context
+     * @param intent
+     * @param user
+     */    
+    public static void changeTheme(Context context, Intent intent, UserHandle user) {
+    	context.sendOrderedBroadcastAsUser(intent, user, Manifest.permission.CHANGE_CONFIGURATION,
+    			null, null, 0, null, null);
     }
 
     public interface ThemeColumns {
